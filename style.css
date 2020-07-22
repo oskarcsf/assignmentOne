@@ -14,12 +14,17 @@ body{
     
 }
 
+.nav-list a{
+    text-decoration: none;
+}
+
 .nav-list li{
     padding: 10px;
     list-style: none;
     font-weight: bolder;
 }
 
+.nav-list a:first-child,
 .nav-list li:nth-child(1){
     color: #BC5C5B;
 }
