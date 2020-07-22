@@ -24,12 +24,12 @@ body{
     font-weight: bolder;
 }
 
-.nav-list a:first-child,
-.nav-list li:nth-child(1){
+
+.nav-list li:nth-child(1) a{
     color: #BC5C5B;
 }
 
-.nav-list li:nth-child(2), .nav-list li:nth-child(3){
+.nav-list li:nth-child(2) a, .nav-list li:nth-child(3) a{
     color: #DA9494;
 }
 
