@@ -118,6 +118,22 @@ body{
     border-radius: 10px;
     padding: 10px;
 }
+
+.form input::-webkit-calendar-picker-indicator {
+    opacity: 100;
+    color: #DA9595;
+ }
+
+ .form datalist{
+    color: #DA9595;
+ }
+
+.form input::placeholder{
+    color: #DA9595;
+}
+
+
+
 #textarea{
     width: fit-content;
     height: fit-content;
