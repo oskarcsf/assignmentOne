@@ -87,12 +87,23 @@ body{
     font-family: 'Lexend Deca', sans-serif;
     border-radius: 10px;
     color: #DF9C9C;
+    background-color: white;
+    border: 2px solid #DF9C9C;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#button:hover{
+    background-color: #DF9C9C;
+    color: white;
 }
 
 .button button{
     margin-top: 10px;
     background-color:#DF9C9C;
     color: white;
+    border: none;
+    cursor: pointer;
 }
 
 .container{
@@ -118,10 +129,18 @@ body{
     color: #DA9595;
 }
 
-.form input{
+.form input, .form textarea{
     margin: 10px;
     border-radius: 10px;
     padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.form label{
+    color: #DF9C9C;
+    font-size: 15px;
+    display: block;
+    margin: 10px 10px 5px 10px;
 }
 
 .form input::-webkit-calendar-picker-indicator {
@@ -140,17 +159,16 @@ body{
 
 
 #textarea{
-    width: fit-content;
+    width: 160px;
     height: fit-content;
     min-height: 8em;
-}
-.form label{
-    color: #DF9C9C;
-    font-size: 15px;
+    resize: vertical;
 }
 .button button{
     border-radius: 10px;
     padding: 10px 60px;
+    border: none;
+    cursor: pointer;
 }
 
 .title-cards{
@@ -187,6 +205,13 @@ body{
     margin: 10px;
     border-radius: 10px;
     box-shadow: 0 10px 6px -6px #777;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.card:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 15px 10px -6px #777;
 }
 
 .card-top{
