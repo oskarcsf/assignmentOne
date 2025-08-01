@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Find the best scuba diving sites in Melbourne with Simple Dive's weather-based recommendation tool">
+  <title>Simple Dive – Melbourne Dive Recommendations</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Roboto', Arial, Helvetica, sans-serif;
+      line-height: 1.5;
+      color: #333333;
+      background-color: #ffffff;
+    }
+    a {
+      color: #0077b6;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    header.hero {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333333;
+      text-align: center;
+      overflow: hidden;
+      background-color: #ffffff;
+      padding: 0rem 1rem 1rem;
+      max-height: 10vh;
+      min-height: fit-content; /* Applied for desktop mode */
+    }
+    header.hero .hero-content {
+      position: relative;
+      z-index: 1;
+      padding: 1rem;
+      min-height: auto;
+      width: 100%;
+      max-width: 1000px; /* Align with main content width */
+    }
+    header.hero .tagline {
+      font-family: 'Roboto', Arial, Helvetica, sans-serif;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      min-height: fit-content;
+    }
+    header.hero .controls {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      gap: 1.5rem; /* Increased for better spacing */
+      flex-wrap: wrap;
+    }
+    header.hero label {
+      font-family: 'Roboto', Arial, Helvetica, sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #333333;
+      text-align: right;
+      flex: 0 0 auto; /* Prevent label from stretching */
+    }
+    header.hero select {
+      font-family: 'Roboto', Arial, Helvetica, sans-serif;
+      padding: 0.75rem 2rem 0.75rem 1rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      background-color: #ffffff;
+      color: #333333;
+      flex: 1; /* Allow select to grow */
+      min-width: 150px; /* Slightly wider for usability */
+      max-width: 200px; /* Cap width for balance */
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg fill='%230077b6' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 0.5rem center;
+    }
+    .loading {
+      text-align: center;
+      font-size: 1rem;
+      color: #0077b6;
+      margin: 1rem 0;
+    }
+    .error {
+      text-align: center;
+      font-size: 1rem;
+      color: #cc0033;
+      margin: 1rem 0;
+    }
+    main {
+      max-width: 1000px;
+      margin: 0 auto 2rem auto;
+      padding: 1rem;
+      position: relative;
+      z-index: 2;
+      background-color: #ffffff;
+      border-radius: 8px;
+    }
+    .results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .site-card {
+      font-family: 'Roboto', Arial, Helvetica, sans-serif;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+      transition: transform 0.2s ease-in-out;
+    }
+    .site-card:hover {
+      transform: translateY(-4px);
+    }
+    .site-card h3 {
+      font-family: 'Roboto', Arial, Helvetica, sans-serif;
+      margin-bottom: 0.5rem;
+      color: #0077b6;
+      font-size: 1.2rem;
+    }
+    .site-card h3 a {
+      color: #0077b6;
+      text-decoration: none;
+    }
+    .site-card h3 a:hover {
+      text-decoration: underline;
+    }
+    .site-card .info {
+      font-family: 'Roboto', Arial, Helvetica, sans-serif;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+      color: #333333;
+    }
+    .site-card .rating {
+      font-family: 'Roboto', Arial, Helvetica, sans-serif;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    .rating.good {
+      color: #009966;
+    }
+    .rating.moderate {
+      color: #ff9900;
+    }
+    .rating.poor {
+      color: #cc0033;
+    }
+    footer {
+      font-family: 'Roboto', Arial, Helvetica, sans-serif;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.8rem;
+      background-color: #f8f9fa;
+      color: #333333;
+      width: 100%;
+      position: relative;
+      bottom: 0;
+    }
+    .product-links {
+      margin-top: 1rem;
+    }
+    .product-links a {
+      font-family: 'Roboto', Arial, Helvetica, sans-serif;
+      margin: 0 0.5rem;
+      padding: 0.5rem 1rem;
+      background-color: #0077b6;
+      color: #ffffff;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .product-links a:hover {
+      background-color: #005f8c;
+    }
+    @media (max-width: 600px) {
+      header.hero {
+        padding: 1rem 1rem 1rem;
+        min-height: fit-content; /* Maintain existing behavior for mobile */
+      }
+      header.hero .tagline {
+        font-family: 'Roboto', Arial, Helvetica, sans-serif;
+        font-size: 0.9rem;
+      }
+      header.hero .controls {
+        flex-direction: column; /* Stack vertically for mobile */
+        gap: 0.75rem; /* Reduced gap for tighter mobile layout */
+        align-items: stretch; /* Ensure full-width alignment */
+      }
+      header.hero label {
+        font-size: 0.85rem;
+        text-align: left;
+        padding: 0.25rem 0; /* Reduced padding for mobile */
+      }
+      header.hero select {
+        width: 100%;
+        max-width: none; /* Remove max-width for full-width mobile */
+        min-width: 0;
+        padding: 0.75rem;
+      }
+      main {
+        margin: 0 auto 1rem auto;
+        padding: 0.5rem;
+      }
+      .results {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+      .site-card h3 {
+        font-size: 1rem;
+      }
+      .site-card .info {
+        font-size: 0.75rem;
+      }
+      .site-card .rating {
+        font-size: 0.8rem;
+      }
+      footer {
+        font-size: 0.7rem;
+      }
+      .product-links a {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="hero">
+    <div class="hero-content">
+      <h1 class="tagline">Simple Dive – Your Guide to Victoria's Best Dives</h1>
+      <div class="controls">
+        <label for="date-input">Select Date</label>
+        <select id="date-input" aria-label="Select dive date"></select>
+        <label for="hour-input">Select Hour</label>
+        <select id="hour-input" aria-label="Select dive hour"></select>
+        <label for="filter-input">Filter Sites</label>
+        <select id="filter-input" aria-label="Filter dive sites">
+          <option value="all">All Sites</option>
+          <option value="beginner">Beginner-Friendly</option>
+          <option value="port-phillip">Port Phillip Bay</option>
+          <option value="ocean">Ocean-Facing</option>
+        </select>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div id="results" class="results"></div>
+  </main>
+  <footer>
+    <p>Data provided by the <a href="https://open-meteo.com/">Open-Meteo</a> weather and marine APIs. For sites requiring low tide or slack water, check times at <a href="http://www.bom.gov.au/australia/tides/#!/vic-port-phillip-heads">BOM Tides</a>. Dive responsibly – always check local conditions and dive within your limits.</p>
+    <p>Visit us at Simple Dive, 21 Indra Road, Blackburn South, VIC 3130 | Follow us on <a href="https://www.instagram.com/simplediveclub">Instagram</a></p>
+    <div class="product-links">
+      <a href="https://www.simpledive.com.au/products/guided-fun-dive-2-shore-1-shore-1-boat-for-2-person?variant=42864156377244">Book a Guided Dive</a>
+      <a href="https://www.simpledive.com.au/pages/gear-rental-simpe-dive-melbourne">Rent Scuba Gear</a>
+      <a href="https://www.simpledive.com.au/collections/specialty-course">Specialty Courses</a>
+    </div>
+  </footer>
+  <script>
+    const diveSites = [
+      {
+        name: "Rye Pier, Victoria",
+        description: "Popular shore dive inside Port Phillip with seahorses and spider crabs. Great for all levels.",
+        goodWindDirections: ["West", "South West", "South", "South East", "East"],
+        isPortPhillipBay: true,
+        beginnerFriendly: true,
+        coords: { lat: -38.365919, lon: 144.823002 },
+        distanceFromShop: 83 // km from Blackburn South
+      },
+      {
+        name: "Blairgowrie Pier, Victoria",
+        description: "Sheltered marina dive site known for colourful nudibranchs. Ideal for beginners.",
+        goodWindDirections: ["East", "West", "South West", "South", "South East"],
+        isPortPhillipBay: true,
+        beginnerFriendly: true,
+        coords: { lat:-38.357198, lon: 144.773347 },
+        distanceFromShop: 81
+      },
+      {
+        name: "Mordialloc Pier, Victoria",
+        description: "Inner bay dive with diverse fish life, suitable for beginners.",
+        goodWindDirections: ["East", "North East", "South East"],
+        isPortPhillipBay: true,
+        beginnerFriendly: true,
+        coords: { lat: -38.012312, lon: 145.083396 },
+        distanceFromShop: 15
+      },
+      {
+        name: "Mornington Pier, Victoria",
+        description: "Convenient inner bay dive; fish life around the pylons. Beginner-friendly.",
+        goodWindDirections: ["East", "North East", "South East"],
+        isPortPhillipBay: true,
+        beginnerFriendly: false,
+        coords: { lat: -38.211869, lon: 145.034667 },
+        distanceFromShop: 48
+      },
+      {
+        name: "Williamstown, Victoria",
+        description: "Northern Port Phillip dive with calm conditions, ideal for training.",
+        goodWindDirections: ["North East", "North", "North West"],
+        isPortPhillipBay: true,
+        beginnerFriendly: true,
+        coords: { lat: -37.868623, lon: 144.890228 },
+        distanceFromShop: 20
+      },
+      {
+        name: "Portsea Pier, Victoria",
+        description: "Most famous dive site for spotting Sea Dragons.",
+        goodWindDirections: ["South West", "South", "South East"],
+        isPortPhillipBay: true,
+        beginnerFriendly: false,
+        requiresLowTide: true,
+        coords: { lat:-38.318511, lon: 144.713431 },
+        distanceFromShop: 87
+      },
+      {
+        name: "Sorrento Backbeach, Victoria",
+        description: "Ocean-facing dive with vibrant marine life.",
+        goodWindDirections: ["North", "North West", "North East"],
+        requiresLowTide: true,
+        maxSwellHeight: 1.5,
+        beginnerFriendly: false,
+        coords: { lat: -38.347835, lon: 144.727356 },
+        distanceFromShop: 85
+      },
+      {
+        name: "Port Phillip Head Dive",
+        description: "Spectacular wall dive at Port Phillip Heads, best at slack water with low swell. Advanced divers only.",
+        goodWindDirections: ["North", "North West", "North East", "West", "South West", "South", "South East", "East"],
+        maxSwellHeight: 2.0,
+        beginnerFriendly: false,
+        requiresSlackWater: false,
+        coords: { lat: -38.284561, lon: 144.639262 },
+        distanceFromShop: 90
+      },
+      {
+        name: "Port Fairy East Beach, Victoria",
+        description: "Far West Victoria shore dive with kelp beds.",
+        goodWindDirections: ["North", "North East", "North West"],
+        requiresLowTide: true,
+        maxSwellHeight: 2.0,
+        beginnerFriendly: false,
+        coords: { lat: -38.395708, lon: 142.226854 },
+        distanceFromShop: 270
+      },
+      {
+        name: "Kilarney Beach, Victoria",
+        description: "Far West Victoria dive with rocky reefs.",
+        goodWindDirections: ["North", "North West", "North East"],
+        requiresLowTide: true,
+        maxSwellHeight: 2.0,
+        beginnerFriendly: false,
+        coords: { lat: -38.366268, lon: 142.317211 },
+        distanceFromShop: 265
+      }
+    ];
+    const windDirectionAngles = {
+      "North": 0,
+      "North East": 45,
+      "East": 90,
+      "South East": 135,
+      "South": 180,
+      "South West": 225,
+      "West": 270,
+      "North West": 315
+    };
+    function getCardinalDirection(degrees) {
+      const directions = ["North", "North East", "East", "South East", "South", "South West", "West", "North West"];
+      const index = Math.round(degrees / 45) % 8;
+      return directions[index];
+    }
+    function normalizeDate(d) {
+      const dt = new Date(d);
+      dt.setHours(0, 0, 0, 0);
+      return dt;
+    }
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371; // Earth's radius in km
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return Math.round(R * c);
+    }
+    async function fetchWeather(coords, date, hour) {
+      const localDate = normalizeDate(date);
+      const isoDate = localDate.toISOString().split('T')[0];
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&hourly=wind_speed_10m,wind_direction_10m&timezone=Australia/Melbourne&start_date=${isoDate}&end_date=${isoDate}`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.hourly && data.hourly.time) {
+          const timeArray = data.hourly.time;
+          const selectedTime = `${isoDate}T${hour.toString().padStart(2, '0')}:00`;
+          const index = timeArray.indexOf(selectedTime);
+          if (index !== -1) {
+            return {
+              wind_speed: data.hourly.wind_speed_10m[index],
+              wind_direction: data.hourly.wind_direction_10m[index],
+              isFallback: false
+            };
+          }
+        }
+      } catch (err) {
+        console.warn('Weather API call failed; using fallback data.', err);
+        return { wind_speed: 8 + Math.random() * 5, wind_direction: 180, isFallback: true };
+      }
+      return { wind_speed: 8 + Math.random() * 5, wind_direction: 180, isFallback: true };
+    }
+    async function fetchMarine(coords, date, hour) {
+      const localDate = normalizeDate(date);
+      const isoDate = localDate.toISOString().split('T')[0];
+      const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${coords.lat}&longitude=${coords.lon}&hourly=wave_height&timezone=Australia/Melbourne&start_date=${isoDate}&end_date=${isoDate}`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.hourly && data.hourly.time) {
+          const timeArray = data.hourly.time;
+          const selectedTime = `${isoDate}T${hour.toString().padStart(2, '0')}:00`;
+          const index = timeArray.indexOf(selectedTime);
+          if (index !== -1) {
+            return { wave_height: data.hourly.wave_height[index], isFallback: false };
+          }
+        }
+      } catch (err) {
+        console.warn('Marine API call failed; using fallback data.', err);
+        return { wave_height: 0.5 + Math.random() * 0.3, isFallback: true };
+      }
+      return { wave_height: 0.5 + Math.random() * 0.3, isFallback: true };
+    }
+    function computeRating(site, weather, marine) {
+      let score = 0;
+      const windDir = weather.wind_direction;
+      if (Array.isArray(site.goodWindDirections)) {
+        let minDiff = 180;
+        site.goodWindDirections.forEach(dir => {
+          const dirAngle = windDirectionAngles[dir] || 180;
+          let diff = Math.abs(windDir - dirAngle);
+          if (diff > 180) diff = 360 - diff;
+          if (diff < minDiff) minDiff = diff;
+        });
+        if (site.isPortPhillipBay) {
+          if (minDiff <= 30 && weather.wind_speed < 30) score += 5; // Good
+          else if (minDiff <= 60 && weather.wind_speed < 30) score += 2; // Moderate
+          else score -= 2; // Poor
+        } else {
+          if (minDiff <= 30) score += 3;
+          else if (minDiff <= 60) score += 1;
+          else score -= 1;
+          const wave = marine.wave_height;
+          if (wave < 0.7) score += 2;
+          else if (wave < 1.2) score += 0;
+          else score -= 2;
+          if (site.maxSwellHeight && wave > site.maxSwellHeight) {
+            score -= 2;
+          }
+        }
+      }
+      // Removed slack water and low tide penalties
+      return score;
+    }
+    function renderRecommendations(recommendations, isFallback) {
+      const container = document.getElementById('results');
+      container.innerHTML = '';
+      if (isFallback) {
+        const errorMsg = document.createElement('p');
+        errorMsg.className = 'error';
+        errorMsg.textContent = 'Using estimated conditions due to API unavailability. Results may be less accurate.';
+        container.appendChild(errorMsg);
+      }
+      recommendations.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'site-card';
+        const title = document.createElement('h3');
+        const mapLink = document.createElement('a');
+        mapLink.href = `https://www.google.com/maps/search/?api=1&query=${item.site.coords.lat},${item.site.coords.lon}`;
+        mapLink.target = "_blank";
+        mapLink.innerHTML = `${item.site.name} <i class="fas fa-map-marker-alt"></i>`;
+        title.appendChild(mapLink);
+        card.appendChild(title);
+        const description = document.createElement('p');
+        description.className = 'info';
+        description.textContent = item.site.description;
+        card.appendChild(description);
+        const conditions = document.createElement('p');
+        conditions.className = 'info';
+        const windDir = getCardinalDirection(item.weather.wind_direction);
+        if (item.site.isPortPhillipBay) {
+          conditions.textContent = `Wind: ${item.weather.wind_speed.toFixed(1)} km/h from ${windDir} • Distance: ${item.site.distanceFromShop} km from Simple Dive`;
+        } else {
+          conditions.textContent = `Wind: ${item.weather.wind_speed.toFixed(1)} km/h from ${windDir} • Waves: ${item.marine.wave_height.toFixed(1)} m • Distance: ${item.site.distanceFromShop} km from Simple Dive`;
+        }
+        card.appendChild(conditions);
+        if (item.site.requiresLowTide) {
+          const tideNote = document.createElement('p');
+          tideNote.className = 'info';
+          tideNote.innerHTML = `Best dive within 2 hours before low tide. Check <a href="http://www.bom.gov.au/australia/tides/#!/vic-port-phillip-heads">BOM Tides</a> for times.`;
+          card.appendChild(tideNote);
+        } else if (item.site.requiresSlackWater) {
+          const tideNote = document.createElement('p');
+          tideNote.className = 'info';
+          tideNote.innerHTML = `Best dive at slack water. Check <a href="http://www.bom.gov.au/australia/tides/#!/vic-port-phillip-heads">BOM Tides</a> for times.`;
+          card.appendChild(tideNote);
+        }
+        const ratingEl = document.createElement('p');
+        ratingEl.className = 'rating';
+        let label = '';
+        let ratingClass = '';
+        if (item.rating >= 4) { label = 'Good'; ratingClass = 'good'; }
+        else if (item.rating >= 1) { label = 'Moderate'; ratingClass = 'moderate'; }
+        else { label = 'Poor'; ratingClass = 'poor'; }
+        ratingEl.textContent = `Rating: ${label}`;
+        ratingEl.classList.add(ratingClass);
+        card.appendChild(ratingEl);
+        container.appendChild(card);
+      });
+    }
+    async function fetchRecommendations() {
+      const dateInput = document.getElementById('date-input');
+      const hourInput = document.getElementById('hour-input');
+      const filterInput = document.getElementById('filter-input');
+      const selectedDate = dateInput.value;
+      const selectedHour = parseInt(hourInput.value, 10);
+      const filter = filterInput.value;
+      const resultsContainer = document.getElementById('results');
+      resultsContainer.innerHTML = '<p class="loading">Loading recommendations… <i class="fas fa-spinner fa-spin"></i></p>';
+      let filteredSites = diveSites;
+      if (filter === 'beginner') {
+        filteredSites = diveSites.filter(site => site.beginnerFriendly);
+      } else if (filter === 'port-phillip') {
+        filteredSites = diveSites.filter(site => site.isPortPhillipBay);
+      } else if (filter === 'ocean') {
+        filteredSites = diveSites.filter(site => !site.isPortPhillipBay);
+      }
+      try {
+        const recommendations = await Promise.all(filteredSites.map(async site => {
+          const weather = await fetchWeather(site.coords, selectedDate, selectedHour);
+          const marine = site.isPortPhillipBay ? {} : await fetchMarine(site.coords, selectedDate, selectedHour);
+          const rating = computeRating(site, weather, marine);
+          return { site, weather, marine, rating };
+        }));
+        const isFallback = recommendations.some(r => r.weather.isFallback || (r.marine && r.marine.isFallback));
+        recommendations.sort((a, b) => b.rating - a.rating);
+        renderRecommendations(recommendations, isFallback);
+      } catch (err) {
+        console.error('Error fetching recommendations:', err);
+        resultsContainer.innerHTML = '<p class="error">Error loading recommendations. Please try again later.</p>';
+      }
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      const dateInput = document.getElementById('date-input');
+      const hourInput = document.getElementById('hour-input');
+      const filterInput = document.getElementById('filter-input');
+      const today = new Date();
+      const currentHour = today.getHours();
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() + i);
+        const option = document.createElement('option');
+        option.value = date.toISOString().split('T')[0];
+        let label = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        if (i === 0) label += ' (Today)';
+        else if (i === 1) label += ' (Tomorrow)';
+        option.textContent = label;
+        dateInput.appendChild(option);
+      }
+      for (let i = 0; i < 24; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `${i.toString().padStart(2, '0')}:00`;
+        hourInput.appendChild(option);
+      }
+      hourInput.value = currentHour;
+      dateInput.addEventListener('change', fetchRecommendations);
+      hourInput.addEventListener('change', fetchRecommendations);
+      filterInput.addEventListener('change', fetchRecommendations);
+      fetchRecommendations();
+    });
+  </script>
+</body>
+</html>
