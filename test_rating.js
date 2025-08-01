@@ -79,7 +79,7 @@ const site = {
   name: "Port Phillip Head Dive",
   goodWindDirections: ["North", "North West", "North East", "West", "South West", "South", "South East", "East"],
   maxSwellHeight: 2.0,
-  isPortPhillipBay: true, // This was missing!
+  // isPortPhillipBay: false (correctly omitted - it's outside the bay)
   coords: { lat: -38.284561, lon: 144.639262 },
   distanceFromShop: 90
 };
@@ -97,7 +97,7 @@ console.log("Testing Port Phillip Head Dive rating:");
 console.log(`Site: ${site.name}`);
 console.log(`Wind: ${weather.wind_speed} km/h from North (${weather.wind_direction}°)`);
 console.log(`Waves: ${marine.wave_height} m`);
-console.log(`Is Port Phillip Bay: ${site.isPortPhillipBay}`);
+console.log(`Is Port Phillip Bay: ${site.isPortPhillipBay || false}`);
 console.log("---");
 
 const rating = computeRating(site, weather, marine);
